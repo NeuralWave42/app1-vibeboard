@@ -1,15 +1,4 @@
-import React, { useState } from 'react';
-
-export const VIBE_OPTIONS = [
-  'Excited',
-  'Focused',
-  'Relaxed',
-  'Creative',
-  'Productive',
-  'Other'
-] as const;
-
-export type VibeOption = typeof VIBE_OPTIONS[number];
+import React from 'react';
 
 interface VibeSelectorProps {
   value: string;
@@ -22,56 +11,40 @@ export const VibeSelector: React.FC<VibeSelectorProps> = ({
   onChange,
   className = ''
 }) => {
-  const [isCustom, setIsCustom] = useState(false);
-  const [customValue, setCustomValue] = useState('');
-
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue = e.target.value;
-    if (newValue === 'Other') {
-      setIsCustom(true);
-      setCustomValue('');
-    } else {
-      setIsCustom(false);
-      onChange(newValue);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const singleWord = e.target.value.trim().split(/[\s,.-]+/)[0];
+    // Only update if there's valid input
+    if (singleWord) {
+      onChange(singleWord);
     }
   };
 
-  const handleCustomSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (customValue.trim()) {
-      onChange(customValue.trim());
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Ensure value is not empty on blur
+    if (!value.trim()) {
+      e.target.focus();
     }
   };
 
   return (
     <div className={className}>
-      {isCustom ? (
-        <form onSubmit={handleCustomSubmit} className="space-y-2">
-          <input
-            type="text"
-            value={customValue}
-            onChange={(e) => setCustomValue(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Describe your vibe"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Set Vibe
-          </button>
-        </form>
-      ) : (
-        <select
-          value={VIBE_OPTIONS.includes(value as VibeOption) ? value : 'Other'}
-          onChange={handleSelectChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-        >
-          {VIBE_OPTIONS.map(option => (
-            <option key={option} value={option}>{option}</option>
-          ))}
-        </select>
-      )}
+      <input 
+        type="text"
+        value={value}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        placeholder="Enter single word vibe..."
+        maxLength={20}
+        pattern="\S+"
+        required
+        aria-required="true"
+        className={`w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
+          !value.trim() ? 'border-red-300' : 'border-gray-300'
+        }`}
+      />
+      <p className={`mt-1 text-xs ${!value.trim() ? 'text-red-500' : 'text-gray-500'}`}>
+        {!value.trim() ? 'A single word vibe is required' : 'Enter a single word to describe your vibe'}
+      </p>
     </div>
   );
 };

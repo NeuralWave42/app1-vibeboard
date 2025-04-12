@@ -1,71 +1,79 @@
-import React, { useState, useCallback } from 'react';
-import { PageLayout } from '../components/Layout/PageLayout';
-import { ProfileForm } from '../components/Profile/ProfileForm';
-import { EntryBoard } from '../components/Entry/EntryBoard';
-import { FilterPanel } from '../components/Filter/FilterPanel';
-import { useProfileStore } from '../stores/profileStore';
-import { useEntryStore } from '../stores/entryStore';
+import React, { useState } from "react";
+import { ProfileForm } from "../components/Profile/ProfileForm";
+import { ProfilePreview } from "../components/Profile/ProfilePreview";
+import { EntryBoard } from "../components/Entry/EntryBoard";
+import { FilterPanel } from "../components/Filter/FilterPanel";
+import { VibeFilterDropdown } from "../components/Filter/VibeFilterDropdown";
+import { AuthorFilterSelector } from "../components/Filter/AuthorFilterSelector";
 
+/**
+ * Main board view component that displays the collaborative workspace
+ */
 const BoardView = () => {
-  const { profile } = useProfileStore();
-  const { addEntry, filteredEntries } = useEntryStore();
-  const [filters, setFilters] = useState({ authors: [], vibes: [] });
+    const [selectedVibes, setSelectedVibes] = useState<string[]>([]);
+    const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
 
-  const handleCreateEntry = useCallback(() => {
-    if (profile.name && profile.activity) {
-      addEntry({
-        name: profile.name,
-        avatarUrl: profile.avatarUrl,
-        activity: profile.activity,
-        vibe: profile.vibe,
-        budget: profile.budget
-      });
-    }
-  }, [profile, addEntry]);
+    const handleAuthorToggle = (author: string) => {
+        setSelectedAuthors(prev =>
+            prev.includes(author)
+                ? prev.filter(a => a !== author)
+                : [...prev, author]
+        );
+    };
 
-  const handleFiltersChange = useCallback((newFilters) => {
-    setFilters(newFilters);
-  }, []);
+    return (
+        <main className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto space-y-6">
+                {/* Author Filter Test */}
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Author Filter</h2>
+                    <AuthorFilterSelector
+                        selectedAuthors={selectedAuthors}
+                        onAuthorToggle={handleAuthorToggle}
+                        className="max-w-md"
+                    />
+                </div>
 
-  // Left Column - Profile Section
-  const leftColumn = (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-gray-900">Your Profile</h2>
-      <ProfileForm />
-      <button
-        onClick={handleCreateEntry}
-        disabled={!profile.name || !profile.activity}
-        className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-      >
-        Create Entry
-      </button>
-    </div>
-  );
+                {/* Vibe Filter Test */}
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Vibe Filter</h2>
+                    <VibeFilterDropdown
+                        selectedVibes={selectedVibes}
+                        onChange={setSelectedVibes}
+                        className="max-w-xs"
+                    />
+                </div>
 
-  // Center Column - Entry Board
-  const centerColumn = (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-gray-900">Activity Board</h2>
-      <EntryBoard entries={filteredEntries(filters)} />
-    </div>
-  );
+                {/* Filters Section */}
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Filters</h2>
+                    <FilterPanel 
+                        onFiltersChange={filters => {
+                            console.log('Filters updated:', filters);
+                        }}
+                    />
+                </div>
 
-  // Right Column - Filters
-  const rightColumn = (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-gray-900">Filters</h2>
-      <FilterPanel onFiltersChange={handleFiltersChange} />
-    </div>
-  );
+                {/* Entry Board Section */}
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Entry Board</h2>
+                    <EntryBoard />
+                </div>
 
-  return (
-    <PageLayout
-      left={leftColumn}
-      center={centerColumn}
-      right={rightColumn}
-      className="container mx-auto px-4"
-    />
-  );
+                {/* Profile Preview */}
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Profile Preview</h2>
+                    <ProfilePreview />
+                </div>
+
+                {/* Profile Form */}
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Profile Form</h2>
+                    <ProfileForm />
+                </div>
+            </div>
+        </main>
+    );
 };
 
 export default BoardView;

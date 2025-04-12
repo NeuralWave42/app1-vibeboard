@@ -30,7 +30,7 @@ export const useProfileStore = create<ProfileState>(
       }))
     }),
     {
-      docId: 'user-profile'
+      docId: 'user-profile' // This is where profile data is synced
     }
   )
 );

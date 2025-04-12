@@ -33,6 +33,14 @@ export const ProfileForm = () => {
     }
   }, [profile, addEntry, updateProfile]);
 
+  const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Only update if it's a valid number or empty string
+    if (value === '' || !isNaN(Number(value))) {
+      updateProfile({ budget: value === '' ? 0 : Number(value) });
+    }
+  };
+
   return (
     <form className="space-y-6 max-w-lg">
       <div>
@@ -98,9 +106,9 @@ export const ProfileForm = () => {
         <input
           type="number"
           min="0"
-          step="0.01"
-          value={profile.budget}
-          onChange={(e) => updateProfile({ budget: parseFloat(e.target.value) || 0 })}
+          step="any"
+          value={profile.budget || ''} // Use empty string when 0
+          onChange={handleBudgetChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
         />
       </div>

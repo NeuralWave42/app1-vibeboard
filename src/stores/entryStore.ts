@@ -33,7 +33,7 @@ export const useEntryStore = create<EntryState>(
         })),
     }),
     {
-      docId: 'shared-entries',
+      docId: 'shared-entries' // Tonk document ID for syncing
     }
   )
 );

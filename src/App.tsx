@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { PageLayout } from "./components/Layout/PageLayout";
 import { ProfileForm } from "./components/Profile/ProfileForm";
@@ -6,8 +6,32 @@ import { EntryBoard } from "./components/Entry/EntryBoard";
 import { FilterPanel } from "./components/Filter/FilterPanel";
 import { SectionTitle } from "./components/Layout/SectionTitle";
 import { Divider } from "./components/Layout/Divider";
+import { useProfileStore } from "./stores/profileStore";
+import { useEntryStore } from "./stores/entryStore";
 
 const MainLayout = () => {
+  const [syncStatus, setSyncStatus] = useState<string>('');
+
+  useEffect(() => {
+    console.log('Initial Profile:', useProfileStore.getState().profile);
+    console.log('Initial Entries:', useEntryStore.getState().entries);
+
+    const unsubProfile = useProfileStore.subscribe((state) => {
+      setSyncStatus(`Last sync: ${new Date().toLocaleTimeString()}`);
+      console.log('Profile Updated:', state.profile);
+    });
+
+    const unsubEntries = useEntryStore.subscribe((state) => {
+      setSyncStatus(`Last sync: ${new Date().toLocaleTimeString()}`);
+      console.log('Entries Updated:', state.entries);
+    });
+
+    return () => {
+      unsubProfile();
+      unsubEntries();
+    };
+  }, []);
+
   const leftColumn = (
     <div className="h-full flex flex-col space-y-4">
       <SectionTitle title="Profile" />
@@ -43,11 +67,16 @@ const MainLayout = () => {
   );
 
   return (
-    <PageLayout
-      left={leftColumn}
-      center={centerColumn}
-      right={rightColumn}
-    />
+    <>
+      <div className="fixed top-2 right-2 bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm">
+        {syncStatus}
+      </div>
+      <PageLayout
+        left={leftColumn}
+        center={centerColumn}
+        right={rightColumn}
+      />
+    </>
   );
 };
 
