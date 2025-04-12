@@ -1,0 +1,7 @@
+{
+  "name": "app1-vibeboard",
+  "plan": {
+    "description": "VibeBoard is a shared, collaborative space where people post what they want to do, tagged by vibe, to discover and connect through mood-driven intentions."
+  },
+  "template": "react"
+}
