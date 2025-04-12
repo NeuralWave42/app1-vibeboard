@@ -4,6 +4,7 @@ import ProfileDisplay from "../components/Profile/ProfileDisplay";
 import EntryCard from "../components/Entry/EntryCard";
 import EntryForm from "../components/Entry/EntryForm";
 import EntryList from "../components/Entry/EntryList";
+import VibeTag from "../components/UI/VibeTag";
 
 /**
  * Main board view component that displays the collaborative workspace
@@ -39,6 +40,8 @@ const BoardView = () => {
             currentForm: entry
         }));
     };
+
+    const testVibes = ['Excited', 'Grateful', 'Focused', 'Calm', 'Inspired', 'Accomplished'];
 
     return (
         <main className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
@@ -131,6 +134,34 @@ const BoardView = () => {
                     <section className="space-y-6">
                         <h2 className="text-xl font-semibold text-gray-900">Single Entry Example</h2>
                         <EntryCard {...sampleEntry} />
+                    </section>
+                </div>
+
+                {/* VibeTag Component Examples */}
+                <div className="border-b border-gray-300 pb-4">
+                    <h2 className="text-lg font-medium text-gray-700 mb-2">VibeTag Component</h2>
+                    <section className="bg-white rounded-lg shadow-sm p-6">
+                        <div className="space-y-6">
+                            {/* Size Variants */}
+                            <div>
+                                <h3 className="text-sm font-medium text-gray-500 mb-3">Size Variants</h3>
+                                <div className="flex gap-4 items-center">
+                                    <VibeTag vibe="Excited" size="sm" />
+                                    <VibeTag vibe="Excited" size="md" />
+                                    <VibeTag vibe="Excited" size="lg" />
+                                </div>
+                            </div>
+
+                            {/* Available Vibes */}
+                            <div>
+                                <h3 className="text-sm font-medium text-gray-500 mb-3">Available Vibes</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {testVibes.map(vibe => (
+                                        <VibeTag key={vibe} vibe={vibe} />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     </section>
                 </div>
             </div>

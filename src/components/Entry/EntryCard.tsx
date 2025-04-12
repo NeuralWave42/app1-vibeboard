@@ -1,4 +1,5 @@
 import React from 'react';
+import VibeTag from '../UI/VibeTag';
 
 interface EntryCardProps {
   text: string;
@@ -23,10 +24,7 @@ const EntryCard: React.FC<EntryCardProps> = ({ text, vibe, author }) => {
             </div>
             <span className="text-gray-600 font-medium">{author.name}</span>
           </div>
-          
-          <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium">
-            {vibe}
-          </span>
+          <VibeTag vibe={vibe} size="md" />
         </div>
       </blockquote>
     </div>
