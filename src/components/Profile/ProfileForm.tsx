@@ -80,6 +80,19 @@ export const ProfileForm = () => {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
+          What do you want to do this week?
+        </label>
+        <input
+          type="text"
+          value={profile.activity}
+          onChange={(e) => updateProfile({ activity: e.target.value })}
+          placeholder="e.g., Working on a project, Learning React..."
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           Budget (£)
         </label>
         <input

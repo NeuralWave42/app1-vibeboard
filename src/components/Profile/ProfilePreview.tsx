@@ -20,14 +20,22 @@ export const ProfilePreview = () => {
         )}
         
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-medium text-gray-900 truncate">{profile.name}</h3>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="text-lg font-medium text-gray-900 truncate">{profile.name}</h3>
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-50 text-blue-700">
               {profile.vibe}
             </span>
-            <span className="text-sm text-gray-500">
-              Budget: £{profile.budget?.toFixed(2)}
-            </span>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex flex-col">
+              <span className="text-sm text-gray-500">Currently</span>
+              <p className="text-base text-gray-900">{profile.activity}</p>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm text-gray-500">Budget</span>
+              <p className="text-base text-gray-900">£{profile.budget?.toFixed(2)}</p>
+            </div>
           </div>
         </div>
       </div>
