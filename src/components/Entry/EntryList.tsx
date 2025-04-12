@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import EntryCard from './EntryCard';
+import EntryListFilters from './EntryListFilters';
 
 export interface Entry {
   id: string;
@@ -12,7 +13,8 @@ export interface Entry {
 }
 
 interface EntryListProps {
-  entries: Entry[];
+  entries?: Entry[];
+  withFilters?: boolean;
 }
 
 const SAMPLE_ENTRIES: Entry[] = [
@@ -44,17 +46,67 @@ const SAMPLE_ENTRIES: Entry[] = [
   }
 ];
 
-const EntryList: React.FC<EntryListProps> = ({ entries = SAMPLE_ENTRIES }) => {
+const EntryList: React.FC<EntryListProps> = ({ 
+  entries = SAMPLE_ENTRIES,
+  withFilters = false 
+}) => {
+  const [selectedVibe, setSelectedVibe] = useState('');
+  const [selectedAuthor, setSelectedAuthor] = useState('');
+
+  const { vibes, authors, displayedEntries } = useMemo(() => {
+    const vibeSet = new Set(entries.map(entry => entry.vibe));
+    const authorSet = new Set(entries.map(entry => entry.author.name));
+    
+    if (!withFilters) {
+      return { 
+        vibes: [], 
+        authors: [], 
+        displayedEntries: entries 
+      };
+    }
+
+    const filtered = entries.filter(entry => {
+      const matchesVibe = !selectedVibe || entry.vibe === selectedVibe;
+      const matchesAuthor = !selectedAuthor || entry.author.name === selectedAuthor;
+      return matchesVibe && matchesAuthor;
+    });
+
+    return {
+      vibes: Array.from(vibeSet),
+      authors: Array.from(authorSet),
+      displayedEntries: filtered
+    };
+  }, [entries, selectedVibe, selectedAuthor, withFilters]);
+
   return (
-    <div className="space-y-4">
-      {entries.map((entry) => (
-        <EntryCard
-          key={entry.id}
-          text={entry.text}
-          vibe={entry.vibe}
-          author={entry.author}
+    <div className="space-y-6">
+      {withFilters && (
+        <EntryListFilters
+          vibes={vibes}
+          authors={authors}
+          selectedVibe={selectedVibe}
+          selectedAuthor={selectedAuthor}
+          onVibeChange={setSelectedVibe}
+          onAuthorChange={setSelectedAuthor}
+          onClearFilters={() => {
+            setSelectedVibe('');
+            setSelectedAuthor('');
+          }}
+          totalEntries={entries.length}
+          filteredCount={displayedEntries.length}
         />
-      ))}
+      )}
+
+      <div className="space-y-4">
+        {displayedEntries.map((entry) => (
+          <EntryCard
+            key={entry.id}
+            text={entry.text}
+            vibe={entry.vibe}
+            author={entry.author}
+          />
+        ))}
+      </div>
     </div>
   );
 };

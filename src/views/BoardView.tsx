@@ -108,12 +108,20 @@ const BoardView = () => {
                     </section>
                 </div>
 
-                {/* EntryList Component */}
+                {/* EntryList Components */}
                 <div className="border-b border-gray-300 pb-4">
-                    <h2 className="text-lg font-medium text-gray-700 mb-2">EntryList Component</h2>
+                    <h2 className="text-lg font-medium text-gray-700 mb-2">EntryList Components</h2>
+                    
+                    {/* With Filters */}
+                    <section className="bg-white rounded-lg shadow-sm p-6 mb-6">
+                        <h2 className="text-xl font-semibold text-gray-900 mb-4">Filtered Entries</h2>
+                        <EntryList withFilters={true} />
+                    </section>
+
+                    {/* Without Filters */}
                     <section className="bg-white rounded-lg shadow-sm p-6">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">All Entries</h2>
-                        <EntryList />
+                        <h2 className="text-xl font-semibold text-gray-900 mb-4">Unfiltered Entries</h2>
+                        <EntryList withFilters={false} />
                     </section>
                 </div>
 
