@@ -1,29 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useProfileStore } from '../../stores/profileStore';
-
-const VIBE_OPTIONS = [
-  'Excited',
-  'Focused',
-  'Relaxed',
-  'Creative',
-  'Productive',
-  'Other'
-];
+import { VibeSelector } from './VibeSelector';
 
 export const ProfileForm = () => {
   const { profile, updateProfile } = useProfileStore();
-  const [customVibe, setCustomVibe] = useState('');
-  const [isCustomVibe, setIsCustomVibe] = useState(false);
-
-  const handleVibeChange = (value: string) => {
-    if (value === 'Other') {
-      setIsCustomVibe(true);
-      setCustomVibe('');
-    } else {
-      setIsCustomVibe(false);
-      updateProfile({ vibe: value });
-    }
-  };
 
   const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -36,15 +16,8 @@ export const ProfileForm = () => {
     }
   }, [updateProfile]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isCustomVibe) {
-      updateProfile({ vibe: customVibe });
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-lg">
+    <form className="space-y-6 max-w-lg">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Name
@@ -93,6 +66,16 @@ export const ProfileForm = () => {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
+          Current Vibe
+        </label>
+        <VibeSelector
+          value={profile.vibe}
+          onChange={(vibe) => updateProfile({ vibe })}
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           Budget (£)
         </label>
         <input
@@ -104,40 +87,6 @@ export const ProfileForm = () => {
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Current Vibe
-        </label>
-        {isCustomVibe ? (
-          <input
-            type="text"
-            value={customVibe}
-            onChange={(e) => setCustomVibe(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Describe your vibe"
-          />
-        ) : (
-          <select
-            value={profile.vibe}
-            onChange={(e) => handleVibeChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          >
-            {VIBE_OPTIONS.map(option => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
-        )}
-      </div>
-
-      {isCustomVibe && (
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Update Vibe
-        </button>
-      )}
     </form>
   );
 };
