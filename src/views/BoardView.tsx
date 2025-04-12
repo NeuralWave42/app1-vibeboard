@@ -5,6 +5,8 @@ import EntryCard from "../components/Entry/EntryCard";
 import EntryForm from "../components/Entry/EntryForm";
 import EntryList from "../components/Entry/EntryList";
 import VibeTag from "../components/UI/VibeTag";
+import EmptyState from "../components/UI/EmptyState";
+import { FileQuestion } from 'lucide-react';
 
 /**
  * Main board view component that displays the collaborative workspace
@@ -159,6 +161,33 @@ const BoardView = () => {
                                     {testVibes.map(vibe => (
                                         <VibeTag key={vibe} vibe={vibe} />
                                     ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                {/* EmptyState Component Examples */}
+                <div className="border-b border-gray-300 pb-4">
+                    <h2 className="text-lg font-medium text-gray-700 mb-2">EmptyState Component</h2>
+                    <section className="bg-white rounded-lg shadow-sm p-6">
+                        <div className="space-y-6">
+                            {/* Default EmptyState */}
+                            <div>
+                                <h3 className="text-sm font-medium text-gray-500 mb-3">Default Style</h3>
+                                <div className="border border-gray-200 rounded-lg">
+                                    <EmptyState message="No items found" />
+                                </div>
+                            </div>
+
+                            {/* Custom Icon EmptyState */}
+                            <div>
+                                <h3 className="text-sm font-medium text-gray-500 mb-3">Custom Icon</h3>
+                                <div className="border border-gray-200 rounded-lg">
+                                    <EmptyState 
+                                        message="No results match your search" 
+                                        icon={<FileQuestion className="w-12 h-12 text-gray-400" />}
+                                    />
                                 </div>
                             </div>
                         </div>

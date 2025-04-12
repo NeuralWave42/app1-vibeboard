@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import EntryCard from './EntryCard';
 import EntryListFilters from './EntryListFilters';
+import EmptyState from '../UI/EmptyState';
+import { MessageSquare } from 'lucide-react';
 
 export interface Entry {
   id: string;
@@ -77,6 +79,38 @@ const EntryList: React.FC<EntryListProps> = ({
       displayedEntries: filtered
     };
   }, [entries, selectedVibe, selectedAuthor, withFilters]);
+
+  if (displayedEntries.length === 0) {
+    return (
+      <div className="space-y-6">
+        {withFilters && (
+          <EntryListFilters
+            vibes={vibes}
+            authors={authors}
+            selectedVibe={selectedVibe}
+            selectedAuthor={selectedAuthor}
+            onVibeChange={setSelectedVibe}
+            onAuthorChange={setSelectedAuthor}
+            onClearFilters={() => {
+              setSelectedVibe('');
+              setSelectedAuthor('');
+            }}
+            totalEntries={entries.length}
+            filteredCount={displayedEntries.length}
+          />
+        )}
+        
+        <EmptyState 
+          message={
+            withFilters && (selectedVibe || selectedAuthor)
+              ? "No entries match your filters"
+              : "No entries yet. Be the first to share!"
+          }
+          icon={<MessageSquare className="w-12 h-12 text-gray-400" />}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
