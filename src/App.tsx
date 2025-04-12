@@ -4,30 +4,41 @@ import { PageLayout } from "./components/Layout/PageLayout";
 import { ProfileForm } from "./components/Profile/ProfileForm";
 import { EntryBoard } from "./components/Entry/EntryBoard";
 import { FilterPanel } from "./components/Filter/FilterPanel";
+import { SectionTitle } from "./components/Layout/SectionTitle";
+import { Divider } from "./components/Layout/Divider";
 
 const MainLayout = () => {
   const leftColumn = (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Profile</h2>
-      <ProfileForm />
+    <div className="h-full flex flex-col space-y-4">
+      <SectionTitle title="Profile" />
+      <Divider />
+      <div className="flex-1 overflow-auto">
+        <ProfileForm />
+      </div>
     </div>
   );
 
   const centerColumn = (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Entries</h2>
-      <EntryBoard />
+    <div className="h-full flex flex-col space-y-4">
+      <SectionTitle title="Entries" />
+      <Divider />
+      <div className="flex-1 overflow-auto">
+        <EntryBoard />
+      </div>
     </div>
   );
 
   const rightColumn = (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Filters</h2>
-      <FilterPanel 
-        onFiltersChange={filters => {
-          console.log('Filters updated:', filters);
-        }}
-      />
+    <div className="h-full flex flex-col space-y-4">
+      <SectionTitle title="Filters" />
+      <Divider />
+      <div className="flex-1 overflow-auto">
+        <FilterPanel 
+          onFiltersChange={filters => {
+            console.log('Filters updated:', filters);
+          }}
+        />
+      </div>
     </div>
   );
 

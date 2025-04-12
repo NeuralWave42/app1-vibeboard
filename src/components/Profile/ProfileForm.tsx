@@ -1,9 +1,11 @@
 import React, { useCallback } from 'react';
 import { useProfileStore } from '../../stores/profileStore';
+import { useEntryStore } from '../../stores/entryStore';
 import { VibeSelector } from './VibeSelector';
 
 export const ProfileForm = () => {
   const { profile, updateProfile } = useProfileStore();
+  const { addEntry } = useEntryStore();
 
   const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -15,6 +17,21 @@ export const ProfileForm = () => {
       reader.readAsDataURL(file);
     }
   }, [updateProfile]);
+
+  const handleCreateEntry = useCallback(() => {
+    if (profile.name && profile.activity) {
+      addEntry({
+        authorName: profile.name,
+        authorPic: profile.avatarUrl,
+        activity: profile.activity,
+        vibe: profile.vibe,
+        budget: profile.budget
+      });
+
+      // Clear the activity field after creating entry
+      updateProfile({ activity: '' });
+    }
+  }, [profile, addEntry, updateProfile]);
 
   return (
     <form className="space-y-6 max-w-lg">
@@ -86,6 +103,17 @@ export const ProfileForm = () => {
           onChange={(e) => updateProfile({ budget: parseFloat(e.target.value) || 0 })}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
         />
+      </div>
+
+      <div className="pt-4 border-t border-gray-200">
+        <button
+          type="button"
+          onClick={handleCreateEntry}
+          disabled={!profile.name || !profile.activity}
+          className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Create Entry
+        </button>
       </div>
     </form>
   );

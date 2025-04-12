@@ -14,21 +14,22 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   className = ''
 }) => {
   return (
-    <main className={`min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8 ${className}`}>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-8xl mx-auto">
-        {/* Left Column */}
-        <div className="lg:col-span-3">
-          {left}
+    <main className={`min-h-screen w-full bg-gray-100 ${className}`}>
+      {/* Main grid container */}
+      <div className="grid grid-cols-1 md:grid-cols-8 lg:grid-cols-12 h-screen">
+        {/* Left Column - collapses to full width on mobile */}
+        <div className="md:col-span-3 lg:col-span-3 bg-white/50 overflow-auto">
+          <div className="p-4 h-full">{left}</div>
         </div>
 
-        {/* Center Column */}
-        <div className="lg:col-span-6">
-          {center}
+        {/* Center Column - takes most space on desktop */}
+        <div className="md:col-span-5 lg:col-span-6 bg-white overflow-auto">
+          <div className="p-4 h-full">{center}</div>
         </div>
 
-        {/* Right Column */}
-        <div className="lg:col-span-3">
-          {right}
+        {/* Right Column - moves to bottom on mobile/tablet */}
+        <div className="md:col-span-8 lg:col-span-3 bg-white/50 overflow-auto order-last">
+          <div className="p-4 h-full">{right}</div>
         </div>
       </div>
     </main>
