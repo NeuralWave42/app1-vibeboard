@@ -3,6 +3,7 @@ import ProfileSection from "../components/Profile/ProfileSection";
 import ProfileDisplay from "../components/Profile/ProfileDisplay";
 import EntryCard from "../components/Entry/EntryCard";
 import EntryForm from "../components/Entry/EntryForm";
+import EntryList from "../components/Entry/EntryList";
 
 /**
  * Main board view component that displays the collaborative workspace
@@ -107,11 +108,20 @@ const BoardView = () => {
                     </section>
                 </div>
 
-                {/* Entry List */}
+                {/* EntryList Component */}
+                <div className="border-b border-gray-300 pb-4">
+                    <h2 className="text-lg font-medium text-gray-700 mb-2">EntryList Component</h2>
+                    <section className="bg-white rounded-lg shadow-sm p-6">
+                        <h2 className="text-xl font-semibold text-gray-900 mb-4">All Entries</h2>
+                        <EntryList />
+                    </section>
+                </div>
+
+                {/* Individual EntryCard Example */}
                 <div className="border-b border-gray-300 pb-4">
                     <h2 className="text-lg font-medium text-gray-700 mb-2">EntryCard Component</h2>
                     <section className="space-y-6">
-                        <h2 className="text-xl font-semibold text-gray-900">Recent Entries</h2>
+                        <h2 className="text-xl font-semibold text-gray-900">Single Entry Example</h2>
                         <EntryCard {...sampleEntry} />
                     </section>
                 </div>
