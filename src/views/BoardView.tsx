@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import ProfileSection from "../components/Profile/ProfileSection";
 import ProfileDisplay from "../components/Profile/ProfileDisplay";
 import EntryCard from "../components/Entry/EntryCard";
+import EntryForm from "../components/Entry/EntryForm";
 
 /**
  * Main board view component that displays the collaborative workspace
  */
 const BoardView = () => {
+  const [testEntry, setTestEntry] = useState<{ text: string; vibe: string } | null>(null);
+
   // Hardcoded profile data for now
   const profile = {
     name: "John Doe",
@@ -29,10 +32,17 @@ const BoardView = () => {
         <ProfileSection />
         <ProfileDisplay {...profile} />
 
-        {/* Entry Form Placeholder */}
+        {/* Entry Form */}
         <section className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Entry Form</h2>
-          <p className="text-gray-600">Entry form placeholder</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">New Entry</h2>
+          <EntryForm onSubmit={(entry) => setTestEntry(entry)} />
+          {testEntry && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-md">
+              <pre className="text-sm text-gray-600 whitespace-pre-wrap">
+                {JSON.stringify(testEntry, null, 2)}
+              </pre>
+            </div>
+          )}
         </section>
 
         {/* Entry List */}
