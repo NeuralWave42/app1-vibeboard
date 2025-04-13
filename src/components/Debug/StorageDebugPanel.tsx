@@ -4,7 +4,7 @@ import { useEntryStore } from '../../stores/entryStore';
 export const StorageDebugPanel = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Record<string, Date>>({});
-  const entries = useEntryStore((state) => state.entries);
+  const { entries, syncStatus, lastSyncError } = useEntryStore();
 
   useEffect(() => {
     const handleStateChange = () => {
@@ -41,6 +41,19 @@ export const StorageDebugPanel = () => {
             </button>
           </div>
           
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="text-sm font-mono">Sync Status:</h3>
+            <span className={`px-2 py-0.5 rounded text-xs ${
+              syncStatus === 'synced' ? 'bg-green-500' : 
+              syncStatus === 'error' ? 'bg-red-500' : 'bg-yellow-500'
+            }`}>
+              {syncStatus}
+            </span>
+          </div>
+          {lastSyncError && (
+            <p className="text-xs text-red-400 mb-2">{lastSyncError}</p>
+          )}
+
           <div className="space-y-4 text-xs font-mono">
             {/* Entries Store Debug */}
             <div>
