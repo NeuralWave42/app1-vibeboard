@@ -8,6 +8,7 @@ import { SectionTitle } from "./components/Layout/SectionTitle";
 import { Divider } from "./components/Layout/Divider";
 import { useProfileStore } from "./stores/profileStore";
 import { useEntryStore } from "./stores/entryStore";
+import { StorageDebugPanel } from "./components/Debug/StorageDebugPanel";
 
 const MainLayout = () => {
   const [syncStatus, setSyncStatus] = useState<string>('');
@@ -76,6 +77,7 @@ const MainLayout = () => {
         center={centerColumn}
         right={rightColumn}
       />
+      <StorageDebugPanel />
     </>
   );
 };
