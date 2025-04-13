@@ -13,6 +13,7 @@ import { WeekTimer } from './components/Timer/WeekTimer';
 import type { FilterState } from "./types/filters";
 import { initialFilterState } from "./types/filters";
 import { SyncMonitor } from './components/Debug/SyncMonitor';
+import { SyncVerifier } from './components/Debug/SyncVerifier';
 
 const MainLayout = () => {
   const [syncStatus, setSyncStatus] = useState<string>('');
@@ -86,6 +87,7 @@ const MainLayout = () => {
       />
       <StorageDebugPanel />
       <SyncMonitor />
+      {process.env.NODE_ENV === 'development' && <SyncVerifier />}
     </>
   );
 };

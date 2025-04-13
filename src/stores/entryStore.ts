@@ -22,20 +22,24 @@ interface EntryState {
 
 export const useEntryStore = create<EntryState>(
   sync(
-    (set) => ({
+    (set, get) => ({
       entries: [],
       syncStatus: 'connecting',
       lastSyncError: undefined,
       lastUpdate: null,
       addEntry: (entry) => {
         const timestamp = new Date();
-        console.log(`[Sync ${timestamp.toISOString()}] Adding entry:`, entry);
+        const syncId = Math.random().toString(36).substr(2, 9);
+        
+        console.log(`[Sync:${syncId}] Adding entry from ${window.location.href}`);
+        
         set((state) => ({
           entries: [
             {
               ...entry,
               id: crypto.randomUUID(),
               createdAt: timestamp,
+              _syncId: syncId // Add tracking ID
             },
             ...state.entries,
           ],
@@ -55,21 +59,41 @@ export const useEntryStore = create<EntryState>(
     {
       docId: 'shared-entries',
       onSync: (docId) => {
-        console.log(`[Sync] Document ${docId} synced successfully`);
+        console.info(
+          `[Tonk] Sync successful on ${window.location.href}\n`,
+          `- DocID: ${docId}\n`,
+          `- Entries: ${useEntryStore.getState().entries.length}\n`,
+          `- Time: ${new Date().toISOString()}`
+        );
         useEntryStore.getState().setSyncStatus('synced');
       },
       onError: (error) => {
-        console.error('[Sync] Error:', error);
+        console.error(
+          `[Tonk] Sync error on ${window.location.href}:`,
+          error.message
+        );
         useEntryStore.getState().setSyncStatus('error', error.message);
       },
       onInit: () => {
         console.log('[Sync] Initializing...');
         useEntryStore.getState().setSyncStatus('connecting');
       },
-      initTimeout: 5000,
-      retryDelay: 1000,
-      // Enable verbose logging
-      debug: process.env.NODE_ENV !== 'production'
+      initTimeout: 10000,
+      retryDelay: 2000,
+      debug: true
     }
   )
 );
+
+// Add sync verification helper
+export const verifySyncStatus = () => {
+  const state = useEntryStore.getState();
+  console.info(
+    `[Tonk] Store Status:\n`,
+    `- Status: ${state.syncStatus}\n`,
+    `- Entries: ${state.entries.length}\n`,
+    `- Last Update: ${state.lastUpdate?.toISOString()}\n`,
+    `- URL: ${window.location.href}`
+  );
+  return state.syncStatus === 'synced';
+};
