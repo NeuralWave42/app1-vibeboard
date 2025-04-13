@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { X } from 'lucide-react';
 import { useEntryStore } from '../../stores/entryStore';
+import { BudgetSlider } from './BudgetSlider';
 
 interface FilterPanelProps {
   onFiltersChange: (filters: FilterState) => void;
@@ -56,18 +57,20 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     updateFilters({ [type]: updated });
   }, [filters, updateFilters]);
 
-  const setBudgetFilter = useCallback(() => {
+  const handleBudgetChange = useCallback(({ min, max }: { min: number; max: number }) => {
+    setBudgetInput({ min: min.toString(), max: max.toString() });
+  }, []);
+
+  const applyBudgetFilter = useCallback(() => {
     const min = Number(budgetInput.min);
     const max = Number(budgetInput.max);
     
-    if (min > 0 || max > 0) {
-      updateFilters({
-        budget: {
-          min: min || 0,
-          max: max || Infinity
-        }
-      });
-    }
+    updateFilters({
+      budget: {
+        min: min || 0,
+        max: max === 1000 ? Infinity : max
+      }
+    });
   }, [budgetInput, updateFilters]);
 
   const clearBudgetFilter = useCallback(() => {
@@ -149,40 +152,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       </div>
 
       {/* Budget Filter */}
-      <div>
-        <h4 className="text-sm font-medium text-gray-700 mb-2">Budget Range (£)</h4>
-        <div className="flex items-center gap-2">
-          <input
-            type="number"
-            min="0"
-            placeholder="Min"
-            value={budgetInput.min}
-            onChange={e => setBudgetInput(prev => ({ ...prev, min: e.target.value }))}
-            className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+      <div className="space-y-3">
+        <h4 className="text-sm font-medium text-gray-700">Budget Range (£)</h4>
+        <div className="p-4 bg-white rounded-lg border border-gray-200">
+          <BudgetSlider
+            minValue={Number(budgetInput.min) || 0}
+            maxValue={Number(budgetInput.max) || 1000}
+            onChange={handleBudgetChange}
+            onApply={applyBudgetFilter}
           />
-          <span className="text-gray-500">to</span>
-          <input
-            type="number"
-            min="0"
-            placeholder="Max"
-            value={budgetInput.max}
-            onChange={e => setBudgetInput(prev => ({ ...prev, max: e.target.value }))}
-            className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          />
-          <button
-            onClick={setBudgetFilter}
-            className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            Apply
-          </button>
-          {filters.budget && (
-            <button
-              onClick={clearBudgetFilter}
-              className="p-2 text-gray-400 hover:text-gray-500"
-            >
-              <X size={16} />
-            </button>
-          )}
         </div>
       </div>
 
