@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { X } from 'lucide-react';
+import { useEntryStore } from '../../stores/entryStore';
 
 interface FilterPanelProps {
   onFiltersChange: (filters: FilterState) => void;
@@ -15,13 +16,20 @@ interface FilterState {
   } | null;
 }
 
-const SAMPLE_VIBES = ['Excited', 'Focused', 'Relaxed', 'Creative', 'Productive'];
 const SAMPLE_AUTHORS = ['Sarah Chen', 'Alex Thompson', 'Maria Garcia', 'John Smith'];
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({ 
   onFiltersChange,
   className = ''
 }) => {
+  const entries = useEntryStore((state) => state.entries);
+
+  // Extract unique vibes from entries only
+  const availableVibes = useMemo(() => {
+    const vibesSet = new Set(entries.map(entry => entry.vibe));
+    return Array.from(vibesSet).filter(Boolean).sort();
+  }, [entries]);
+
   const [filters, setFilters] = useState<FilterState>({
     vibes: [],
     authors: [],
@@ -96,23 +104,27 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         )}
       </div>
 
-      {/* Vibe Filters */}
+      {/* Always show Vibe Filters section */}
       <div>
         <h4 className="text-sm font-medium text-gray-700 mb-2">Vibes</h4>
         <div className="flex flex-wrap gap-2">
-          {SAMPLE_VIBES.map(vibe => (
-            <button
-              key={vibe}
-              onClick={() => toggleFilter('vibes', vibe)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
-                ${filters.vibes.includes(vibe)
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-            >
-              {vibe}
-            </button>
-          ))}
+          {availableVibes.length > 0 ? (
+            availableVibes.map(vibe => (
+              <button
+                key={vibe}
+                onClick={() => toggleFilter('vibes', vibe)}
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
+                  ${filters.vibes.includes(vibe)
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+              >
+                {vibe}
+              </button>
+            ))
+          ) : (
+            <p className="text-sm text-gray-500 italic py-1">No vibes added yet</p>
+          )}
         </div>
       </div>
 

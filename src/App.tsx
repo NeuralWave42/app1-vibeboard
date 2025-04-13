@@ -9,6 +9,7 @@ import { Divider } from "./components/Layout/Divider";
 import { useProfileStore } from "./stores/profileStore";
 import { useEntryStore } from "./stores/entryStore";
 import { StorageDebugPanel } from "./components/Debug/StorageDebugPanel";
+import { WeekTimer } from './components/Timer/WeekTimer';
 
 const MainLayout = () => {
   const [syncStatus, setSyncStatus] = useState<string>('');
@@ -71,6 +72,9 @@ const MainLayout = () => {
     <>
       <div className="fixed top-2 right-2 bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm">
         {syncStatus}
+      </div>
+      <div className="w-full max-w-7xl mx-auto px-4 py-2">
+        <WeekTimer />
       </div>
       <PageLayout
         left={leftColumn}

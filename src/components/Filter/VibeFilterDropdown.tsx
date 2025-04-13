@@ -1,5 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
+import { useEntryStore } from '../../stores/entryStore';
+import { useProfileStore } from '../../stores/profileStore';
 
 interface VibeFilterDropdownProps {
   selectedVibes: string[];
@@ -7,15 +9,7 @@ interface VibeFilterDropdownProps {
   className?: string;
 }
 
-const VIBE_OPTIONS = [
-  'Excited',
-  'Focused',
-  'Relaxed',
-  'Creative',
-  'Productive',
-  'Other'
-];
-
+// Remove VIBE_OPTIONS constant as we'll get vibes dynamically
 export const VibeFilterDropdown: React.FC<VibeFilterDropdownProps> = ({
   selectedVibes,
   onChange,
@@ -23,6 +17,17 @@ export const VibeFilterDropdown: React.FC<VibeFilterDropdownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const entries = useEntryStore((state) => state.entries);
+  const profile = useProfileStore((state) => state.profile);
+
+  // Extract unique vibes from entries and current profile
+  const availableVibes = useMemo(() => {
+    const vibesSet = new Set(entries.map(entry => entry.vibe));
+    if (profile.vibe) {
+      vibesSet.add(profile.vibe);
+    }
+    return Array.from(vibesSet).sort();
+  }, [entries, profile.vibe]);
 
   const toggleVibe = (vibe: string) => {
     const newSelection = selectedVibes.includes(vibe)
@@ -63,7 +68,7 @@ export const VibeFilterDropdown: React.FC<VibeFilterDropdownProps> = ({
       {isOpen && (
         <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
           <div className="py-1">
-            {VIBE_OPTIONS.map(vibe => (
+            {availableVibes.map(vibe => (
               <button
                 key={vibe}
                 type="button"

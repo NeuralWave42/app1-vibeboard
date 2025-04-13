@@ -1,26 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useProfileStore } from '../../stores/profileStore';
 import { useEntryStore } from '../../stores/entryStore';
 
 export const StorageDebugPanel = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Record<string, Date>>({});
-  const profile = useProfileStore((state) => state.profile);
   const entries = useEntryStore((state) => state.entries);
 
   useEffect(() => {
-    const handleStateChange = (store: string) => {
+    const handleStateChange = () => {
       setLastUpdate(prev => ({
         ...prev,
-        [store]: new Date()
+        entries: new Date()
       }));
     };
 
-    const unsubProfile = useProfileStore.subscribe(() => handleStateChange('profile'));
-    const unsubEntries = useEntryStore.subscribe(() => handleStateChange('entries'));
-
+    const unsubEntries = useEntryStore.subscribe(handleStateChange);
     return () => {
-      unsubProfile();
       unsubEntries();
     };
   }, []);
@@ -47,21 +42,6 @@ export const StorageDebugPanel = () => {
           </div>
           
           <div className="space-y-4 text-xs font-mono">
-            {/* Profile Store Debug */}
-            <div>
-              <div className="flex justify-between items-center text-blue-400">
-                <span>Profile Store (docId: user-profile)</span>
-                {lastUpdate.profile && (
-                  <span className="text-gray-400 text-[10px]">
-                    Updated: {lastUpdate.profile.toLocaleTimeString()}
-                  </span>
-                )}
-              </div>
-              <div className="mt-1 p-2 bg-gray-800 rounded">
-                <pre className="text-green-400">{JSON.stringify(profile, null, 2)}</pre>
-              </div>
-            </div>
-
             {/* Entries Store Debug */}
             <div>
               <div className="flex justify-between items-center text-blue-400">
