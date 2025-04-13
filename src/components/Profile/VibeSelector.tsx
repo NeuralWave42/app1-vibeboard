@@ -12,18 +12,14 @@ export const VibeSelector: React.FC<VibeSelectorProps> = ({
   className = ''
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const singleWord = e.target.value.trim().split(/[\s,.-]+/)[0];
-    // Only update if there's valid input
-    if (singleWord) {
-      onChange(singleWord);
-    }
-  };
-
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    // Ensure value is not empty on blur
-    if (!value.trim()) {
-      e.target.focus();
-    }
+    const input = e.target.value;
+    // Only allow up to 20 characters
+    if (input.length > 20) return;
+    
+    // Clean and normalize the input
+    const cleanedVibe = input.trim();
+    // Update even while typing, but clean value before saving
+    onChange(cleanedVibe);
   };
 
   return (
@@ -32,19 +28,20 @@ export const VibeSelector: React.FC<VibeSelectorProps> = ({
         type="text"
         value={value}
         onChange={handleChange}
-        onBlur={handleBlur}
-        placeholder="Enter single word vibe..."
+        placeholder="Excited, Creative, Curious..."
+        className="w-full px-4 py-3 border-2 transition-colors duration-200
+          rounded-lg outline-none
+          placeholder:text-gray-400 placeholder:italic
+          border-gray-200 hover:border-fuchsia-200
+          focus:border-fuchsia-400 focus:ring-2 focus:ring-fuchsia-200
+          text-gray-800"
         maxLength={20}
-        pattern="\S+"
-        required
-        aria-required="true"
-        className={`w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
-          !value.trim() ? 'border-red-300' : 'border-gray-300'
-        }`}
       />
-      <p className={`mt-1 text-xs ${!value.trim() ? 'text-red-500' : 'text-gray-500'}`}>
-        {!value.trim() ? 'A single word vibe is required' : 'Enter a single word to describe your vibe'}
-      </p>
+      {value?.length > 0 && (
+        <p className="mt-1.5 text-xs text-gray-500">
+          {20 - value.length} characters remaining
+        </p>
+      )}
     </div>
   );
 };

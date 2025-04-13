@@ -15,7 +15,7 @@ export const ProfileForm = () => {
   const [profile, setProfile] = useState<ProfileState>({
     name: '',
     activity: '',
-    vibe: 'Excited',
+    vibe: '', // Start with empty vibe
     budget: 0
   });
 
@@ -56,6 +56,16 @@ export const ProfileForm = () => {
       updateProfile({ budget: value === '' ? 0 : Number(value) });
     }
   };
+
+  const handleVibeChange = useCallback((newVibe: string) => {
+    // Only update if vibe has changed and is valid
+    if (newVibe !== profile.vibe) {
+      // Capitalize first letter if there's content
+      const formattedVibe = newVibe && 
+        newVibe.charAt(0).toUpperCase() + newVibe.slice(1).toLowerCase();
+      updateProfile({ vibe: formattedVibe });
+    }
+  }, [profile.vibe]);
 
   return (
     <form className="space-y-6 max-w-lg">
@@ -108,12 +118,13 @@ export const ProfileForm = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-lg font-bold text-fuchsia-900 mb-2">
           Current Vibe
         </label>
         <VibeSelector
           value={profile.vibe}
-          onChange={(vibe) => updateProfile({ vibe })}
+          onChange={handleVibeChange}
+          className="w-full"
         />
       </div>
 
