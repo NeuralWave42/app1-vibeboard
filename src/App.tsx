@@ -12,6 +12,7 @@ import { StorageDebugPanel } from "./components/Debug/StorageDebugPanel";
 import { WeekTimer } from './components/Timer/WeekTimer';
 import type { FilterState } from "./types/filters";
 import { initialFilterState } from "./types/filters";
+import { SyncMonitor } from './components/Debug/SyncMonitor';
 
 const MainLayout = () => {
   const [syncStatus, setSyncStatus] = useState<string>('');
@@ -84,6 +85,7 @@ const MainLayout = () => {
         right={rightColumn}
       />
       <StorageDebugPanel />
+      <SyncMonitor />
     </>
   );
 };

@@ -15,6 +15,7 @@ interface EntryState {
   entries: Entry[];
   syncStatus: 'connecting' | 'synced' | 'error';
   lastSyncError?: string;
+  lastUpdate: Date | null;
   addEntry: (entry: Omit<Entry, 'id' | 'createdAt'>) => void;
   setSyncStatus: (status: 'connecting' | 'synced' | 'error', error?: string) => void;
 }
@@ -25,26 +26,50 @@ export const useEntryStore = create<EntryState>(
       entries: [],
       syncStatus: 'connecting',
       lastSyncError: undefined,
-      addEntry: (entry) =>
+      lastUpdate: null,
+      addEntry: (entry) => {
+        const timestamp = new Date();
+        console.log(`[Sync ${timestamp.toISOString()}] Adding entry:`, entry);
         set((state) => ({
           entries: [
             {
               ...entry,
               id: crypto.randomUUID(),
-              createdAt: new Date(),
+              createdAt: timestamp,
             },
             ...state.entries,
           ],
-        })),
+          lastUpdate: timestamp
+        }));
+      },
       setSyncStatus: (status, error) => 
-        set({ syncStatus: status, lastSyncError: error }),
+        set(state => {
+          console.log(`[Sync] Status changed to ${status}${error ? `: ${error}` : ''}`);
+          return { 
+            syncStatus: status, 
+            lastSyncError: error,
+            lastUpdate: new Date()
+          };
+        }),
     }),
     {
       docId: 'shared-entries',
-      onSync: () => useEntryStore.getState().setSyncStatus('synced'),
-      onError: (error) => useEntryStore.getState().setSyncStatus('error', error.message),
-      initTimeout: 5000, // 5 second timeout for initial sync
-      retryDelay: 1000, // 1 second delay between retries
+      onSync: (docId) => {
+        console.log(`[Sync] Document ${docId} synced successfully`);
+        useEntryStore.getState().setSyncStatus('synced');
+      },
+      onError: (error) => {
+        console.error('[Sync] Error:', error);
+        useEntryStore.getState().setSyncStatus('error', error.message);
+      },
+      onInit: () => {
+        console.log('[Sync] Initializing...');
+        useEntryStore.getState().setSyncStatus('connecting');
+      },
+      initTimeout: 5000,
+      retryDelay: 1000,
+      // Enable verbose logging
+      debug: process.env.NODE_ENV !== 'production'
     }
   )
 );
