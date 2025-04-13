@@ -10,14 +10,12 @@ interface FilterPanelProps {
 
 interface FilterState {
   vibes: string[];
-  authors: string[];
+  participants: string[];
   budget: {
     min: number;
     max: number;
   } | null;
 }
-
-const SAMPLE_AUTHORS = ['Sarah Chen', 'Alex Thompson', 'Maria Garcia', 'John Smith'];
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({ 
   onFiltersChange,
@@ -31,9 +29,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     return Array.from(vibesSet).filter(Boolean).sort();
   }, [entries]);
 
+  // Extract unique participants from entries
+  const availableParticipants = useMemo(() => {
+    const participantsSet = new Set(entries.map(entry => entry.authorName));
+    return Array.from(participantsSet).filter(Boolean).sort();
+  }, [entries]);
+
   const [filters, setFilters] = useState<FilterState>({
     vibes: [],
-    authors: [],
+    participants: [],
     budget: null
   });
 
@@ -48,7 +52,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     onFiltersChange(updated);
   }, [filters, onFiltersChange]);
 
-  const toggleFilter = useCallback((type: 'vibes' | 'authors', value: string) => {
+  const toggleFilter = useCallback((type: 'vibes' | 'participants', value: string) => {
     const current = filters[type];
     const updated = current.includes(value)
       ? current.filter(v => v !== value)
@@ -81,13 +85,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   const clearAllFilters = useCallback(() => {
     setFilters({
       vibes: [],
-      authors: [],
+      participants: [],
       budget: null
     });
     setBudgetInput({ min: '', max: '' });
     onFiltersChange({
       vibes: [],
-      authors: [],
+      participants: [],
       budget: null
     });
   }, [onFiltersChange]);
@@ -97,7 +101,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       {/* Filter Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium text-gray-900">Filters</h3>
-        {(filters.vibes.length > 0 || filters.authors.length > 0 || filters.budget) && (
+        {(filters.vibes.length > 0 || filters.participants.length > 0 || filters.budget) && (
           <button
             onClick={clearAllFilters}
             className="text-sm text-blue-600 hover:text-blue-700"
@@ -131,23 +135,27 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         </div>
       </div>
 
-      {/* Author Filters */}
+      {/* Participants Filter Section */}
       <div>
-        <h4 className="text-sm font-medium text-gray-700 mb-2">Authors</h4>
+        <h4 className="text-sm font-medium text-gray-700 mb-2">Participants</h4>
         <div className="flex flex-wrap gap-2">
-          {SAMPLE_AUTHORS.map(author => (
-            <button
-              key={author}
-              onClick={() => toggleFilter('authors', author)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
-                ${filters.authors.includes(author)
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-            >
-              {author}
-            </button>
-          ))}
+          {availableParticipants.length > 0 ? (
+            availableParticipants.map(participant => (
+              <button
+                key={participant}
+                onClick={() => toggleFilter('participants', participant)}
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
+                  ${filters.participants.includes(participant)
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+              >
+                {participant}
+              </button>
+            ))
+          ) : (
+            <p className="text-sm text-gray-500 italic py-1">No participants yet</p>
+          )}
         </div>
       </div>
 
@@ -165,7 +173,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       </div>
 
       {/* Active Filters Summary */}
-      {(filters.vibes.length > 0 || filters.authors.length > 0 || filters.budget) && (
+      {(filters.vibes.length > 0 || filters.participants.length > 0 || filters.budget) && (
         <div className="border-t pt-4">
           <h4 className="text-sm font-medium text-gray-700 mb-2">Active Filters</h4>
           <div className="flex flex-wrap gap-2">
@@ -183,14 +191,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </button>
               </span>
             ))}
-            {filters.authors.map(author => (
+            {filters.participants.map(participant => (
               <span
-                key={author}
+                key={participant}
                 className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm bg-blue-100 text-blue-700"
               >
-                {author}
+                {participant}
                 <button
-                  onClick={() => toggleFilter('authors', author)}
+                  onClick={() => toggleFilter('participants', participant)}
                   className="p-0.5 hover:text-blue-800"
                 >
                   <X size={14} />
