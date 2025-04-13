@@ -10,9 +10,12 @@ import { useProfileStore } from "./stores/profileStore";
 import { useEntryStore } from "./stores/entryStore";
 import { StorageDebugPanel } from "./components/Debug/StorageDebugPanel";
 import { WeekTimer } from './components/Timer/WeekTimer';
+import type { FilterState } from "./types/filters";
+import { initialFilterState } from "./types/filters";
 
 const MainLayout = () => {
   const [syncStatus, setSyncStatus] = useState<string>('');
+  const [filters, setFilters] = useState<FilterState>(initialFilterState);
 
   useEffect(() => {
     console.log('Initial Profile:', useProfileStore.getState().profile);
@@ -49,7 +52,7 @@ const MainLayout = () => {
       <SectionTitle title="Entries" />
       <Divider />
       <div className="flex-1 overflow-auto">
-        <EntryBoard />
+        <EntryBoard filters={filters} />
       </div>
     </div>
   );
@@ -60,9 +63,8 @@ const MainLayout = () => {
       <Divider />
       <div className="flex-1 overflow-auto">
         <FilterPanel 
-          onFiltersChange={filters => {
-            console.log('Filters updated:', filters);
-          }}
+          filters={filters}
+          onFiltersChange={setFilters}
         />
       </div>
     </div>

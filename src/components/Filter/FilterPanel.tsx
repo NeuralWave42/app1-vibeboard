@@ -1,103 +1,56 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { X } from 'lucide-react';
 import { useEntryStore } from '../../stores/entryStore';
 import { BudgetSlider } from './BudgetSlider';
-import type { Entry } from '../../types/entry';
-
-interface FilterPanelProps {
-  onFiltersChange: (filters: FilterState) => void;
-  className?: string;
-}
 
 interface FilterState {
   vibes: string[];
   participants: string[];
-  budget: {
-    min: number;
-    max: number;
-  } | null;
+  budget: { min: number; max: number; } | null;
 }
 
-export const FilterPanel: React.FC<FilterPanelProps> = ({ 
+interface FilterPanelProps {
+  filters?: FilterState; // optional so undefined is possible
+  onFiltersChange: (filters: FilterState) => void;
+  className?: string;
+}
+
+export const FilterPanel: React.FC<FilterPanelProps> = ({
+  filters = { vibes: [], participants: [], budget: null }, // default value provided
   onFiltersChange,
   className = ''
 }) => {
   const entries = useEntryStore((state) => state.entries);
 
-  // Safe vibe extraction with null checks
+  // Extract available options from entries
   const availableVibes = useMemo(() => {
-    const vibes = (entries ?? [])
-      .map((entry: Entry) => entry?.vibe)
-      .filter(Boolean) as string[];
-    return Array.from(new Set(vibes)).sort();
+    const vibes = entries?.map(entry => entry?.vibe?.trim()).filter(Boolean) as string[];
+    return [...new Set(vibes)].sort();
   }, [entries]);
 
-  // Safe participants extraction
   const availableParticipants = useMemo(() => {
     const participantsSet = new Set(entries?.map(entry => entry?.authorName).filter(Boolean) ?? []);
     return Array.from(participantsSet).sort();
   }, [entries]);
-
-  const [filters, setFilters] = useState<FilterState>({
-    vibes: [],
-    participants: [],
-    budget: null
-  });
-
-  const [budgetInput, setBudgetInput] = useState({
-    min: '',
-    max: ''
-  });
-
-  const updateFilters = useCallback((newFilters: Partial<FilterState>) => {
-    const updated = { ...filters, ...newFilters };
-    setFilters(updated);
-    onFiltersChange(updated);
-  }, [filters, onFiltersChange]);
 
   const toggleFilter = useCallback((type: 'vibes' | 'participants', value: string) => {
     const current = filters[type];
     const updated = current.includes(value)
       ? current.filter(v => v !== value)
       : [...current, value];
-    
-    updateFilters({ [type]: updated });
-  }, [filters, updateFilters]);
+
+    onFiltersChange({
+      ...filters,
+      [type]: updated
+    });
+  }, [filters, onFiltersChange]);
 
   const handleBudgetChange = useCallback(({ min, max }: { min: number; max: number }) => {
-    setBudgetInput({ min: min.toString(), max: max.toString() });
-  }, []);
-
-  const applyBudgetFilter = useCallback(() => {
-    const min = Number(budgetInput.min);
-    const max = Number(budgetInput.max);
-    
-    updateFilters({
-      budget: {
-        min: min || 0,
-        max: max === 1000 ? Infinity : max
-      }
-    });
-  }, [budgetInput, updateFilters]);
-
-  const clearBudgetFilter = useCallback(() => {
-    setBudgetInput({ min: '', max: '' });
-    updateFilters({ budget: null });
-  }, [updateFilters]);
-
-  const clearAllFilters = useCallback(() => {
-    setFilters({
-      vibes: [],
-      participants: [],
-      budget: null
-    });
-    setBudgetInput({ min: '', max: '' });
     onFiltersChange({
-      vibes: [],
-      participants: [],
-      budget: null
+      ...filters,
+      budget: { min, max }
     });
-  }, [onFiltersChange]);
+  }, [filters, onFiltersChange]);
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -106,7 +59,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         <h3 className="text-lg font-medium text-gray-900">Filters</h3>
         {(filters.vibes.length > 0 || filters.participants.length > 0 || filters.budget) && (
           <button
-            onClick={clearAllFilters}
+            onClick={() => onFiltersChange({ vibes: [], participants: [], budget: null })}
             className="text-sm text-blue-600 hover:text-blue-700"
           >
             Clear all
@@ -114,7 +67,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         )}
       </div>
 
-      {/* Always show Vibe Filters section */}
+      {/* Vibe Filters */}
       <div>
         <h4 className="text-sm font-medium text-gray-700 mb-2">Vibes</h4>
         <div className="flex flex-wrap gap-2">
@@ -133,12 +86,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               </button>
             ))
           ) : (
-            <p className="text-sm text-gray-500 italic py-1">No vibes added yet</p>
+            <p className="text-sm text-gray-500 italic py-1">No vibes available</p>
           )}
         </div>
       </div>
 
-      {/* Participants Filter Section */}
+      {/* Participant Filters */}
       <div>
         <h4 className="text-sm font-medium text-gray-700 mb-2">Participants</h4>
         <div className="flex flex-wrap gap-2">
@@ -157,22 +110,20 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               </button>
             ))
           ) : (
-            <p className="text-sm text-gray-500 italic py-1">No participants yet</p>
+            <p className="text-sm text-gray-500 italic py-1">No participants available</p>
           )}
         </div>
       </div>
 
       {/* Budget Filter */}
-      <div className="space-y-3">
-        <h4 className="text-sm font-medium text-gray-700">Budget Range (£)</h4>
-        <div className="p-4 bg-white rounded-lg border border-gray-200">
-          <BudgetSlider
-            minValue={Number(budgetInput.min) || 0}
-            maxValue={Number(budgetInput.max) || 1000}
-            onChange={handleBudgetChange}
-            onApply={applyBudgetFilter}
-          />
-        </div>
+      <div>
+        <h4 className="text-sm font-medium text-gray-700 mb-2">Budget Range (£)</h4>
+        <BudgetSlider
+          minValue={filters.budget?.min || 0}
+          maxValue={filters.budget?.max || 1000}
+          onChange={handleBudgetChange}
+          onApply={() => {}}
+        />
       </div>
 
       {/* Active Filters Summary */}
@@ -212,7 +163,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm bg-blue-100 text-blue-700">
                 £{filters.budget.min} - £{filters.budget.max === Infinity ? '∞' : filters.budget.max}
                 <button
-                  onClick={clearBudgetFilter}
+                  onClick={() => onFiltersChange({ ...filters, budget: null })}
                   className="p-0.5 hover:text-blue-800"
                 >
                   <X size={14} />

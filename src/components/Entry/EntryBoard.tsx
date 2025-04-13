@@ -12,16 +12,15 @@ interface EntryBoardProps {
 }
 
 export const EntryBoard: React.FC<EntryBoardProps> = ({ filters = {} }) => {
-  // Normalize filters to prevent undefined issues
+  // Normalize filters to ensure they are always defined
   const safeFilters = {
-    vibes: filters.vibes?.filter(Boolean) ?? [],
-    participants: filters.participants?.filter(Boolean) ?? [],
-    budget: filters.budget && filters.budget.min >= 0 ? filters.budget : null
+    vibes: filters.vibes ?? [],
+    participants: filters.participants ?? [],
+    budget: filters.budget ?? null
   };
 
   const filteredEntries = useFilteredEntries(safeFilters);
 
-  // Show empty state with context
   if (!filteredEntries.length) {
     const hasActiveFilters = Boolean(
       safeFilters.vibes.length || 
