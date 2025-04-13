@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 import { useEntryStore } from '../../stores/entryStore';
 import { useProfileStore } from '../../stores/profileStore';
+import { useVibeColorStore } from '../../stores/vibeColorStore';
 
 interface VibeFilterDropdownProps {
   selectedVibes: string[];
@@ -19,15 +20,17 @@ export const VibeFilterDropdown: React.FC<VibeFilterDropdownProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const entries = useEntryStore((state) => state.entries);
   const profile = useProfileStore((state) => state.profile);
+  const getVibeColor = useVibeColorStore(state => state.getVibeColor);
 
-  // Extract unique vibes from entries and current profile
+  // Extract unique vibes safely with null checks
   const availableVibes = useMemo(() => {
-    const vibesSet = new Set(entries.map(entry => entry.vibe));
-    if (profile.vibe) {
+    const vibes = entries?.map(entry => entry?.vibe).filter(Boolean) ?? [];
+    const vibesSet = new Set(vibes);
+    if (profile?.vibe) {
       vibesSet.add(profile.vibe);
     }
     return Array.from(vibesSet).sort();
-  }, [entries, profile.vibe]);
+  }, [entries, profile?.vibe]);
 
   const toggleVibe = (vibe: string) => {
     const newSelection = selectedVibes.includes(vibe)
@@ -68,21 +71,31 @@ export const VibeFilterDropdown: React.FC<VibeFilterDropdownProps> = ({
       {isOpen && (
         <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
           <div className="py-1">
-            {availableVibes.map(vibe => (
-              <button
-                key={vibe}
-                type="button"
-                onClick={() => toggleVibe(vibe)}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                <span className="w-4 h-4 mr-3 border rounded flex items-center justify-center">
-                  {selectedVibes.includes(vibe) && (
-                    <Check size={12} className="text-blue-600" />
-                  )}
-                </span>
-                {vibe}
-              </button>
-            ))}
+            {availableVibes.map(vibe => {
+              const color = getVibeColor(vibe);
+              return (
+                <button
+                  key={vibe}
+                  onClick={() => toggleVibe(vibe)}
+                  className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-50"
+                  style={{
+                    color: selectedVibes.includes(vibe) ? color : 'inherit',
+                  }}
+                >
+                  <span className="w-4 h-4 mr-3 border rounded flex items-center justify-center"
+                    style={{
+                      borderColor: color,
+                      backgroundColor: selectedVibes.includes(vibe) ? `${color}20` : 'transparent'
+                    }}
+                  >
+                    {selectedVibes.includes(vibe) && (
+                      <Check size={12} style={{ color }} />
+                    )}
+                  </span>
+                  {vibe}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

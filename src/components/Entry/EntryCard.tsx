@@ -1,11 +1,9 @@
 import React from 'react';
+import { useVibeColorStore } from '../../stores/vibeColorStore';
+import type { Entry } from '../../types/entry';
 
-interface EntryCardProps {
-  name: string;
-  avatarUrl?: string;
-  activity: string;
-  vibe: string;
-  budget: number;
+interface EntryCardProps extends Omit<Entry, 'id'> {
+  // Add any additional props specific to the card
 }
 
 export const EntryCard: React.FC<EntryCardProps> = ({
@@ -13,41 +11,57 @@ export const EntryCard: React.FC<EntryCardProps> = ({
   avatarUrl,
   activity,
   vibe,
-  budget
+  budget = 0
 }) => {
+  const getVibeColor = useVibeColorStore(state => state.getVibeColor);
+  const vibeColor = vibe ? getVibeColor(vibe) : null;
+
   return (
-    <article className="w-full bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+    <article className="group bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 
+      hover:translate-y-[-2px] transition-all duration-300 animate-slide-up">
       <div className="p-4">
-        <div className="flex items-start gap-3">
-          {/* Avatar */}
+        <div className="flex items-start gap-4">
+          {/* Avatar section with updated styling */}
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt={name}
-              className="w-10 h-10 rounded-full object-cover border border-gray-100 flex-shrink-0"
+              className="w-12 h-12 rounded-full object-cover border-2 border-purple-200 shadow-sm"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-medium text-blue-600">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-100 to-fuchsia-100 
+              flex items-center justify-center shadow-sm border-2 border-purple-200">
+              <span className="text-lg font-semibold bg-gradient-to-br from-purple-600 to-fuchsia-600 
+                bg-clip-text text-transparent">
                 {name.charAt(0)}
               </span>
             </div>
           )}
 
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <h3 className="text-sm font-medium text-gray-900 truncate">
-                {name}
-              </h3>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-600">
-                {vibe}
-              </span>
+          {/* Content section */}
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-lg font-bold text-gray-900 truncate">{name}</h3>
+              {vibe && (
+                <span 
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                  style={{
+                    backgroundColor: vibeColor ? `${vibeColor}20` : 'bg-gray-100',
+                    color: vibeColor ?? 'text-gray-600',
+                    borderColor: vibeColor ? `${vibeColor}40` : 'border-gray-200'
+                  }}
+                >
+                  {vibe}
+                </span>
+              )}
             </div>
-            <p className="text-sm text-gray-600 line-clamp-2 mb-1">
+            
+            <p className="text-base text-gray-700 line-clamp-2 group-hover:text-gray-900 transition-colors">
               {activity}
             </p>
-            <p className="text-xs text-gray-400">
+            
+            <p className="text-sm font-medium bg-gradient-to-r from-purple-600 to-fuchsia-600 
+              bg-clip-text text-transparent">
               Budget: £{budget.toFixed(2)}
             </p>
           </div>

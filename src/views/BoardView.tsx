@@ -10,6 +10,13 @@ import { AuthorFilterSelector } from "../components/Filter/AuthorFilterSelector"
  * Main board view component that displays the collaborative workspace
  */
 const BoardView = () => {
+    // Track filter state at the view level
+    const [filters, setFilters] = useState({
+        vibes: [],
+        participants: [],
+        budget: null
+    });
+
     const [selectedVibes, setSelectedVibes] = useState<string[]>([]);
     const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
 
@@ -48,16 +55,14 @@ const BoardView = () => {
                 <div className="bg-white rounded-lg shadow-sm p-6">
                     <h2 className="text-xl font-semibold text-gray-900 mb-6">Filters</h2>
                     <FilterPanel 
-                        onFiltersChange={filters => {
-                            console.log('Filters updated:', filters);
-                        }}
+                        onFiltersChange={setFilters}
                     />
                 </div>
 
-                {/* Entry Board Section */}
+                {/* Entry Board Section - now with filters */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
                     <h2 className="text-xl font-semibold text-gray-900 mb-6">Entry Board</h2>
-                    <EntryBoard />
+                    <EntryBoard filters={filters} />
                 </div>
 
                 {/* Profile Preview */}

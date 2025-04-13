@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { X } from 'lucide-react';
 import { useEntryStore } from '../../stores/entryStore';
 import { BudgetSlider } from './BudgetSlider';
+import type { Entry } from '../../types/entry';
 
 interface FilterPanelProps {
   onFiltersChange: (filters: FilterState) => void;
@@ -23,16 +24,18 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 }) => {
   const entries = useEntryStore((state) => state.entries);
 
-  // Extract unique vibes from entries only
+  // Safe vibe extraction with null checks
   const availableVibes = useMemo(() => {
-    const vibesSet = new Set(entries.map(entry => entry.vibe));
-    return Array.from(vibesSet).filter(Boolean).sort();
+    const vibes = (entries ?? [])
+      .map((entry: Entry) => entry?.vibe)
+      .filter(Boolean) as string[];
+    return Array.from(new Set(vibes)).sort();
   }, [entries]);
 
-  // Extract unique participants from entries
+  // Safe participants extraction
   const availableParticipants = useMemo(() => {
-    const participantsSet = new Set(entries.map(entry => entry.authorName));
-    return Array.from(participantsSet).filter(Boolean).sort();
+    const participantsSet = new Set(entries?.map(entry => entry?.authorName).filter(Boolean) ?? []);
+    return Array.from(participantsSet).sort();
   }, [entries]);
 
   const [filters, setFilters] = useState<FilterState>({

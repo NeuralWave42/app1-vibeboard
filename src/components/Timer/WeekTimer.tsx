@@ -42,9 +42,13 @@ export const WeekTimer = () => {
   }, [weekStartTime, checkWeek]);
 
   return (
-    <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-lg shadow-md">
-      <h2 className="text-sm font-medium text-center mb-2">Time left this week</h2>
-      <div className="grid grid-cols-4 gap-2 text-center">
+    <div className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-fuchsia-500 to-pink-500 
+      text-white py-4 px-6 rounded-xl shadow-lg animate-gradient-shift border border-white/20">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+      <h2 className="relative text-lg font-bold text-center mb-3 tracking-wide">
+        Time Left for Spontaneous Fun!
+      </h2>
+      <div className="relative grid grid-cols-4 gap-3 text-center">
         <TimeUnit value={timeLeft.days} label="days" />
         <TimeUnit value={timeLeft.hours} label="hours" />
         <TimeUnit value={timeLeft.mins} label="mins" />
@@ -55,10 +59,10 @@ export const WeekTimer = () => {
 };
 
 const TimeUnit = ({ value, label }: { value: number; label: string }) => (
-  <div>
-    <div className="text-2xl font-bold tabular-nums">
+  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 hover:bg-white/20 transition-colors">
+    <div className="text-3xl font-bold tabular-nums animate-pulse">
       {value.toString().padStart(2, '0')}
     </div>
-    <div className="text-xs opacity-75">{label}</div>
+    <div className="text-xs font-medium uppercase tracking-wider opacity-90">{label}</div>
   </div>
 );

@@ -93,15 +93,17 @@ export const ProfileForm = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          What's your spontaneous plan for this week?
+        <label className="block text-lg font-bold text-fuchsia-900 mb-2">
+          What random thing are you excited to try this week? 🎲
         </label>
         <input
           type="text"
           value={profile.activity}
           onChange={(e) => updateProfile({ activity: e.target.value })}
-          placeholder="e.g., Learn to juggle, Start a blog, Try a new cuisine..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Go wild! Learn fire juggling? Start a flash mob? Make blue pasta?"
+          className="w-full px-4 py-3 border-2 border-fuchsia-200 rounded-lg 
+            focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent
+            placeholder:text-fuchsia-300 text-fuchsia-700"
         />
       </div>
 
@@ -129,14 +131,18 @@ export const ProfileForm = () => {
         />
       </div>
 
-      <div className="pt-4 border-t border-gray-200">
+      <div className="pt-6 border-t border-fuchsia-100">
         <button
           type="button"
           onClick={handleCreateEntry}
           disabled={!profile.name || !profile.activity}
-          className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-6 py-3 bg-gradient-to-r from-fuchsia-600 to-purple-600
+            text-white text-lg font-bold rounded-lg shadow-lg
+            hover:scale-105 hover:shadow-xl
+            disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
+            transition-all duration-300 ease-out"
         >
-          Share Your Weekly Plan
+          Lock in this week's vibe ✨
         </button>
       </div>
     </form>
